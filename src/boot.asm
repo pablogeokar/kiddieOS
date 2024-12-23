@@ -1,36 +1,73 @@
-; boot.asm - Bootloader Multiboot
-[BITS 32]
+[BITS 16]
+[ORG 0x7C00]
 
-; Constantes Multiboot
-MULTIBOOT_MAGIC      equ 0x1BADB002
-MULTIBOOT_FLAGS      equ 0x00000003
-MULTIBOOT_CHECKSUM   equ -(MULTIBOOT_MAGIC + MULTIBOOT_FLAGS)
+call HelloWorld
+call JumpLine
 
-; Seção Multiboot
-section .multiboot
-align 4
-    dd MULTIBOOT_MAGIC
-    dd MULTIBOOT_FLAGS
-    dd MULTIBOOT_CHECKSUM
+call PointerString
+call PrintString
 
-; Seção de código
-section .text
-global start
+call PointerBuffer
+call ReadString
+call PointerStringBuffer
+call PrintString
+;jmp $
 
-start:
-    ; Configurar pilha (opcional neste caso)
-    mov esp, stack_top
-    
-    ; Pular para o kernel
-    jmp 0x100000
+HelloWorld:
+    mov ah, 0eh ;imprime caracteres na tela
+    mov al, 48h
+    int 10h ;interrupção de vídeo
+    ret
 
-; Seção de pilha
-section .bss
-align 4
-stack_bottom:
-    resb 16384 ; 16 KB de pilha
-stack_top:
+JumpLine:
+    mov ah, 0eh
+    mov al, 0ah
+    int 10h
+    mov al, 0dh
+    int 10h
+    ret
+
+PointerString:
+    mov si, hello
+    ret
+
+PrintString:
+    mov ah, 0eh
+    mov al, [si]
+    print:
+        int 10h
+        inc si
+        mov al, [si]
+        cmp al ,0
+        jne print ;jump not equal
+    ret
+
+PointerBuffer:
+    mov di, buffer
+    ret
+
+ PointerStringBuffer:
+    mov si, buffer
+    ret
+
+ReadString:
+    mov ah, 00h
+    int 16h
+    mov ah, 0eh
+    int 10h
+    mov [di], al
+    inc di
+    cmp al, 0dh
+    jne ReadString
+    mov ah, 0eh
+    mov al, 0ah
+    int 10h
+    ret
+
+hello db "Hello World!",13,10,0
+buffer times 20 db 0
 
 
-; Preenche até 512 bytes
-resb 512 - ($ - $$)
+
+times 510 - ($-$$) db 0
+dw 0xAA55
