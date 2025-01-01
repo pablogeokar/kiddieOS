@@ -42,31 +42,20 @@ TEXT.SetVideoMode:
 ret
 
 PrintString:
-    lodsb                   ; Carrega caractere de SI para AL
-    cmp al, 0              ; Verifica fim da string
-    je .done               ; Se zero, termina
-    mov ah, 0Eh            ; Função 0Eh - Teletype output
-    mov bh, [Pagination]   ; Página
-    int 10h                ; Imprime caractere
-    jmp PrintString        ; Próximo caractere
-.done:
-    ret
-
-; PrintString:
-;     mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
-;     mov bh, [Pagination]    ; Página de vídeo (0)
-;     mov bl, 40              ; Número da cord dos caracteres
-;     mov cx, 1               ; Número de vezes que a string será impressa
-;     mov al, [si]            ; Move o primeiro byte da string para AL
-;     print:
-;     int 10h                 ; Chama a interrupção 10h para imprimir o caractere em AL
-;     inc si                  ; Incrementa o índice da string
-;     call MoveCursor         ; Chama a sub-rotina MoveCursor para mover o cursor
-;     mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
-;     mov al, [si]            ; Move o próximo byte da string para AL
-;     cmp al, 0               ; Compara AL com 0 (fim da string)    
-;     jne print               ; Se AL não for 0, continua imprimindo o próximo caractere        
-; ret
+    mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
+    mov bh, [Pagination]    ; Página de vídeo (0)
+    mov bl, 40              ; Número da cord dos caracteres
+    mov cx, 1               ; Número de vezes que a string será impressa
+    mov al, [si]            ; Move o primeiro byte da string para AL
+    .print:
+    int 10h                 ; Chama a interrupção 10h para imprimir o caractere em AL
+    inc si                  ; Incrementa o índice da string
+    call MoveCursor         ; Chama a sub-rotina MoveCursor para mover o cursor
+    mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
+    mov al, [si]            ; Move o próximo byte da string para AL
+    cmp al, 0               ; Compara AL com 0 (fim da string)    
+    jne .print               ; Se AL não for 0, continua imprimindo o próximo caractere        
+ret
 
 MoveCursor:
     mov ah, 02h             ; Função 02h da interrupção 10h: Mover cursor
