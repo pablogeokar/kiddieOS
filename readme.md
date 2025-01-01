@@ -36,9 +36,14 @@ Copie o arquivo boot.bin para o início do arquivo floppy.img aqui, usamos conv=
 #dd if=bin/kernel.bin of=img/floppy.img seek=1 conv=notrunc
 
 
-dd if=/dev/zero of=img/system.img bs=1024 count=1440
-dd if=bin/boot.bin of=img/system.img conv=notrunc
-dd if=bin/kernel.bin of=img/system.img seek=1 conv=notrunc
+# dd if=/dev/zero of=img/system.img bs=1024 count=1440
+# dd if=bin/boot.bin of=img/system.img conv=notrunc
+# dd if=bin/kernel.bin of=img/system.img seek=1 conv=notrunc
+
+
+dd if=/dev/zero of=disk.img bs=512 count=2880
+dd if=bin/boot.bin of=disk.img bs=512 count=1 conv=notrunc
+dd if=bin/kernel.bin of=disk.img bs=512 seek=1 conv=notrunc
 
 ```
 
@@ -53,8 +58,22 @@ Aqui está o que cada opção faz:
 - -no-emul-boot: Especifica que o arquivo de boot não é uma emulação de sistema operacional completo.
 
 ```bash
-mkisofs -o iso/bootable.iso -b img/system.img -c boot.catalog -no-emul-boot -boot-load-size 4 -boot-info-table .
+# mkisofs -o iso/bootable.iso -b img/system.img -c boot.catalog -no-emul-boot -boot-load-size 4 -boot-info-table .
+mkisofs -o bootable.iso -b disk.img -c boot.catalog -no-emul-boot -boot-load-size 4 -boot-info-table .
 
 ```
 
-qemu-system-x86_64 -fda img/floppy.img
+qemu-system-x86_64 -drive format=raw,file=disk.img
+
+# qemu-system-x86_64 -fda img/floppy.img
+
+# qemu-system-x86_64 -cdrom bootable.iso
+
+nasm -f bin src/boot.asm -o bin/boot.bin
+nasm -f bin src/kernel.asm -o bin/kernel.bin
+
+dd if=/dev/zero of=disk.img bs=512 count=2880
+dd if=bin/boot.bin of=disk.img bs=512 count=1 conv=notrunc
+dd if=bin/kernel.bin of=disk.img bs=512 seek=1 conv=notrunc
+
+qemu-system-x86_64 -drive format=raw,file=disk.img
