@@ -7,7 +7,7 @@
 ## 2.1 Gerar arquivo binário
 
 ```bash
-nasm -f bin src/bootloader.asm -o bin/bootloader.bin
+nasm -f bin src/boot.asm -o bin/boot.bin
 nasm -f bin src/kernel.asm -o bin/kernel.bin
 ```
 
@@ -18,7 +18,7 @@ Esse comando cria um arquivo chamado floppy.img com espaço suficiente para arma
 ```bash
 #dd if=/dev/zero of=img/floppy.img bs=512 count=2880
 # Criar uma imagem vazia de 1.44MB (disquete)
-dd if=/dev/zero of=img/floppy.img bs=1024 count=1440
+# dd if=/dev/zero of=img/floppy.img bs=1024 count=1440
 ```
 
 ## 2.3 Copie o Bootloader para o Primeiro Setor
@@ -37,7 +37,7 @@ Copie o arquivo boot.bin para o início do arquivo floppy.img aqui, usamos conv=
 
 
 dd if=/dev/zero of=img/system.img bs=1024 count=1440
-dd if=bin/bootloader.bin of=img/system.img conv=notrunc
+dd if=bin/boot.bin of=img/system.img conv=notrunc
 dd if=bin/kernel.bin of=img/system.img seek=1 conv=notrunc
 
 ```
