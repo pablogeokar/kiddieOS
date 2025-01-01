@@ -1,0 +1,95 @@
+;==============================================
+; KiddieOS - Monitor Library Routines
+; Author: Francis
+; Version 1.0.0
+;==============================================
+
+%IFNDEF __MONITOR_LIB__
+%DEFINE __MONITOR_LIB__
+
+;----------------------------------------------
+; Main Strings
+;______________________________________________
+NameSystem db "KiddieOS", 0 ; System Name
+;----------------------------------------------
+
+;----------------------------------------------
+; Window Configurations
+;______________________________________________
+BackWidth   dw 0000h            ; Background Width
+BackHeight  dw 0000h            ; Background Height
+BackColor   db 46               ; Background Color
+Pagination  db 0                ; Pagination
+CursorX     db 15               ; Cursor X
+CursorY     db 12               ; Cursor Y
+State       db 0                ; State
+Key         db 0                ; Key
+count       dw 0                ; Count
+;----------------------------------------------
+
+;----------------------------------------------
+; Routine Library
+;______________________________________________
+; Definir o modo de vídei e configura posição padrão
+VGA.SetVideoMode:
+    mov ah, 00h                 ; Set Video Mode
+    mov al, 13h                 ; 320x200 pixels, 256 cores
+    int 10h                     ; Call BIOS
+    mov ax, 320                 ; Set Background Width
+    mov word[BackWidth], ax     ; Save Background Width
+    mov ax, 200                 ; Set Background Height
+    mov word[BackHeight], ax    ; Save Background Height
+    call DrawPixelConfig        ; Call DrawPixelConfig
+ret
+
+; Função de gravar pixels na tela
+DrawPixelConfig:
+    mov ah, 0Ch                 ; Set Pixel
+    mov al, [BackColor]         ; Color (cor verde)
+    mov cx, 0                   ; X
+    mov dx, 0                   ; Y
+ret
+
+;Pinta o fundo da tela
+DrawBackground:
+    int 10h                     ; Call BIOS
+    inc cx                      ; Incrementa X
+    cmp cx, word[BackWidth]     ; Compara X com a largura
+    jne DrawBackground          ; Se não for igual, pinta o fundo
+    mov cx, 0                   ; Reseta X
+    inc dx                      ; Incrementa Y
+    cmp dx, word[BackHeight]    ; Compara Y com a altura
+    jne DrawBackground          ; Se não for igual, pinta o fundo
+    mov dx, 0                   ; Reseta Y
+ret
+
+; Exibe a string na tela
+PrintString:
+    mov ah, 09h                 ; Função 09h da interrupção 21h: Imprimir string
+    mov bh, [Pagination]        ; Página de vídeo (0)
+    mov bl, 30                  ; Esquema de cores (branco sobre azul)
+    mov cx, 1                   ; Número de vezes que a string será impressa
+    mov al, [si]                ; Move o primeiro byte da string para AL
+    .print:
+    int 10h                     ; Chama a interrupção 10h para imprimir o caractere em AL
+    inc si                      ; Incrementa o índice da string
+    call MoveCursor             ; Chama a sub-rotina MoveCursor para mover o cursor
+    mov ah, 09h                 ; Função 09h da interrupção 21h: Imprimir string
+    mov al, [si]                ; Move o próximo byte da string para AL
+    cmp al, 0                   ; Compara AL com 0 (fim da string)    
+    jne .print                  ; Se AL não for 0, continua imprimindo o próximo caractere        
+ret
+
+; Mover o cursor para o final da string
+MoveCursor:
+    mov ah, 02h                 ; Função 02h da interrupção 10h: Mover cursor
+    mov bh, [Pagination]        ; Página de vídeo (0)
+    inc dl                      ; Incrementa a coluna
+    int 10h                     ; Chama a interrupção 10h para mover o cursor
+ret
+
+EffectInit:
+    ret
+    
+;----------------------------------------------
+%ENDIF

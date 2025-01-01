@@ -23,7 +23,7 @@ dd if=bin/kernel.bin of=disk.img bs=512 seek=1 conv=notrunc
 
 ## 2.3 Crie a Imagem ISO (opcional, utilizar Se quiser testar usando VirtualBox )
 
-Use o utilitário mkisofs para criar uma imagem ISO bootável a partir do arquivo floppy.img:
+Use o utilitário mkisofs para criar uma imagem ISO bootável a partir do arquivo disk.img:
 Aqui está o que cada opção faz:
 
 - -o bootable.iso: Define o nome do arquivo ISO de saída.
@@ -40,3 +40,9 @@ mkisofs -o bootable.iso -b disk.img -c boot.catalog -no-emul-boot -boot-load-siz
 ```bash
 qemu-system-x86_64 -drive format=raw,file=disk.img
 ```
+
+# 4. Principais dúvidas e suas soluções:
+
+### Tentei algumas opções na minha UEFI/BIOS, mas na máquina real, o KiddieOS só mostra um cursor piscando numa tela preta, já no VB, mostra o proposto.
+
+R-> Tenta verificar no seu Setup da máquina real se você tem opção para ir pro Modo legado, exemplo: USB Legacy. E desativar a UEFI para ir pro modo BIOS. Isto é porque o sistema KiddieOS utiliza da BIOS, computadores que configurações mais atuais pode não permitir a execução de algumas funcionalidades do KiddieOS.
