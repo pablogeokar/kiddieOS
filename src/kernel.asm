@@ -12,6 +12,7 @@ OSMain:
     call ConfigSegment      ; Chama a sub-rotina ConfigSegment para configurar os segmentos
     call ConfigStack        ; Chama a sub-rotina ConfigStack para configurar a pilha
     call TEXT.SetVideoMode  ; Chama a sub-rotina SetVideoMode para configurar o modo de vídeo
+    call BackColor          ; Chama a sub-rotina BackColor para definir a cor de fundo
     jmp ShowString          ; Pula para a sub-rotina ShowString
 
 ShowString:
@@ -20,6 +21,8 @@ ShowString:
     call MoveCursor         ; Chama a sub-rotina MoveCursor para mover o cursor
     mov si, Welcome         ; Move o endereço da string para SI
     call PrintString        ; Chama a sub-rotina PrintString para imprimir a string
+    mov ah, 00h             ; Função 00h da interrupção 16h: Esperar por uma tecla
+    int 16h                 ; Chama a interrupção 16h para esperar por uma tecla
     jmp END                 ; Pula para o fim do código
 
 ConfigSegment:
@@ -40,6 +43,18 @@ TEXT.SetVideoMode:
     mov BYTE[BackWidth], 80; Define a largura da tela como 80 colunas
     mov BYTE[BackHeight], 25; Define a altura da tela como 25 linhas
 ret
+
+BackColor:
+    mov ah, 06h             ; Função 06h da interrupção 10h: Definir cor de fundo
+    mov al, 00h             ; Rolagem da tela (0 = sem rolagem)
+    mov bh, 0001_1111b       ; Máscara de bits para cor de fundo
+    mov ch, 0               ; coluna inicial
+    mov cl, 0               ; linha inicial
+    mov dh, [BackHeight]    ; Linha final
+    mov dl, [BackWidth]     ; Coluna final
+    int 10h                 ; Chama a interrupção 10h para definir a cor de fundo
+ret
+    
 
 PrintString:
     mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
@@ -65,4 +80,5 @@ MoveCursor:
 ret
 
 END:
-    jmp $                   ; Loop infinito
+    ;jmp $                   ; Loop infinito
+    int 19h                 ; Reinicia o computador
