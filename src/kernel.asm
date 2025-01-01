@@ -44,7 +44,7 @@ ret
 PrintString:
     mov ah, 09h             ; Função 09h da interrupção 21h: Imprimir string
     mov bh, [Pagination]    ; Página de vídeo (0)
-    mov bl, 40              ; Número da cord dos caracteres
+    mov bl, 30              ; Esquema de cores (branco sobre azul)
     mov cx, 1               ; Número de vezes que a string será impressa
     mov al, [si]            ; Move o primeiro byte da string para AL
     .print:
