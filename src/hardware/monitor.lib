@@ -14,8 +14,10 @@ NameSystem db "KiddieOS", 0 ; System Name
 ;----------------------------------------------
 
 ;----------------------------------------------
-; Window Configurations
+; Monitor & Windows Configurations
 ;______________________________________________
+Count       dw 0000h            ; Count
+
 BackWidth   dw 0000h            ; Background Width
 BackHeight  dw 0000h            ; Background Height
 BackColor   db 46               ; Background Color
@@ -23,8 +25,7 @@ Pagination  db 0                ; Pagination
 CursorX     db 15               ; Cursor X
 CursorY     db 12               ; Cursor Y
 State       db 0                ; State
-Key         db 0                ; Key
-count       dw 0                ; Count
+
 ;----------------------------------------------
 
 ;----------------------------------------------
@@ -67,7 +68,7 @@ ret
 PrintString:
     mov ah, 09h                 ; Função 09h da interrupção 21h: Imprimir string
     mov bh, [Pagination]        ; Página de vídeo (0)
-    mov bl, 30                  ; Esquema de cores (branco sobre azul)
+    ;mov bl, 30                  ; Esquema de cores (branco sobre azul)
     mov cx, 1                   ; Número de vezes que a string será impressa
     mov al, [si]                ; Move o primeiro byte da string para AL
     .print:
@@ -88,8 +89,64 @@ MoveCursor:
     int 10h                     ; Chama a interrupção 10h para mover o cursor
 ret
 
+; Efeito para a mensagem inicial do sistema (logo)
 EffectInit:
-    ret
+    mov bl, 44                  ; Cor de fundo
+    start:
+        mov dh, [CursorY]       ; Move o cursor para a posição Y
+        mov dl, [CursorX]       ; Move o cursor para a posição X
+        call MoveCursor         ; Chama a sub-rotina MoveCursor para mover o cursor
+        mov si, NameSystem      ; Move o endereço da string para SI
+        call PrintString        ; Chama a sub-rotina PrintString para imprimir a string
+        pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
+        mov bl, [State]         ; Move o estado para BL
+        cmp bl, 0               ; Compara BL com 0
+        je Increment            ; Se BL for igual a 0, pula para Increment
+        jmp Decrement           ; Pula para Decrement
+    Increment:
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+        inc bl                  ; Incrementa BL
+        call Waiting            ; Chama a sub-rotina Waiting
+        cmp bl, 50              ; Compara BL com 50
+        jne start               ; Se BL for diferente de 50, pula para start
+        pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
+        mov bl, 1               ; Move 1 para BL
+        mov byte[State], bl     ; Move BL para State
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+        jmp start               ; Pula para start
+    Decrement:
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)        
+        dec bl                  ; Decrementa BL
+        call Waiting            ; Chama a sub-rotina Waiting
+        cmp bl, 44              ; Compara BL com 44
+        jne start               ; Se BL for diferente de 44, pula para start
+        pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
+        mov bl, 0               ; Move 0 para BL
+        mov byte[State], bl     ; Move BL para State
+        mov bx, [Count]         ; Move o contador para BX
+        inc bx                  ; Incrementa BX
+        mov word[Count], bx     ; Move BX para Count
+        cmp bx, 50              ; Compara BX com 5000 (o número 5000 possui 2bytes) na máquina virtual podemos usar 50 ao invés de 5000 porque a máquina virtual é mais lenta
+        jne ReturnLoop          ; Se BX for diferente de 5000, pula para ReturnLoop
+        jmp ReturnProg          ; Pula para ReturnProg
+    ReturnLoop:
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+        jmp start               ; Pula para start
+    ReturnProg:
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+    ret                         ; Retorna para o ponto de chamada
+ret
+
+; cria um efeito de espera contando até 50000
+Waiting:
+    pusha                       ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
+    mov bx, 0                   ; Move 0 para BX
+    time:
+        inc bx                  ; Incrementa BX
+        cmp bx, 500             ; Compara BX com 50000 podemos usar 500 ao invés de 50000 porque a máquina virtual é mais lenta
+        jne time                ; Se BX for diferente de 50000, pula para time
+        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+ret                         ; Retorna para o ponto de chamada
     
 ;----------------------------------------------
 %ENDIF
