@@ -63,17 +63,17 @@ DrawPixelConfig:
 ret
 
 ;Pinta o fundo da tela
-DrawBackground:
-    int 10h                     ; Call BIOS
-    inc cx                      ; Incrementa X
-    cmp cx, word[BackWidth]     ; Compara X com a largura
-    jne DrawBackground          ; Se não for igual, pinta o fundo
-    mov cx, 0                   ; Reseta X
-    inc dx                      ; Incrementa Y
-    cmp dx, word[BackHeight]    ; Compara Y com a altura
-    jne DrawBackground          ; Se não for igual, pinta o fundo
-    mov dx, 0                   ; Reseta Y
-ret
+; DrawBackground:
+;     int 10h                     ; Call BIOS
+;     inc cx                      ; Incrementa X
+;     cmp cx, word[BackWidth]     ; Compara X com a largura
+;     jne DrawBackground          ; Se não for igual, pinta o fundo
+;     mov cx, 0                   ; Reseta X
+;     inc dx                      ; Incrementa Y
+;     cmp dx, word[BackHeight]    ; Compara Y com a altura
+;     jne DrawBackground          ; Se não for igual, pinta o fundo
+;     mov dx, 0                   ; Reseta Y
+; ret
 
 ; Exibe a string na tela
 PrintString:

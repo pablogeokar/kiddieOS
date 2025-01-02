@@ -14,7 +14,7 @@ OSMain:
     call ConfigSegment      ; Chama a sub-rotina ConfigSegment para configurar os segmentos
     call ConfigStack        ; Chama a sub-rotina ConfigStack para configurar a pilha
     call VGA.SetVideoMode   ; Chama a sub-rotina VGA.SetVideoMode para configurar o modo de vídeo
-    call DrawBackground     ; Chama a sub-rotina DrawBackground para pintar o fundo da tela
+    ;call DrawBackground     ; Chama a sub-rotina DrawBackground para pintar o fundo da tela
     call EffectInit         ; Chama a sub-rotina EffectInit para inicializar os efeitos
 
     jmp END                 ; Pula para a sub-rotina END
