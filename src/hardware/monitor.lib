@@ -16,15 +16,26 @@ NameSystem db "KiddieOS", 0 ; System Name
 ;----------------------------------------------
 ; Monitor & Windows Configurations
 ;______________________________________________
-Count       dw 0000h            ; Count
+Window_Bar          dw 3000h    ; Window Bar
+Window_Width        dw 3001h    ; Window Width
+Window_Height       dw 3003h    ; Window Height
+Window_PositionX    dw 3005h    ; Window Position X
+Window_PositionY    dw 3007h    ; Window Position Y
+Window_Bar_Color    dw 300Ah    ; Window Bar Color
+Window_Back_Color   dw 300Bh    ; Window Background Color
+ButtonClose         dw 300Ch    ; Button Close
+ButtonMaximize      dw 300Dh    ; Button Maximize
+ButtonMinimize      dw 300Eh    ; Button Minimize
+StateWindowBar      dw 0000h    ; State Window Bar
+Count               dw 0000h    ; Count
 
-BackWidth   dw 0000h            ; Background Width
-BackHeight  dw 0000h            ; Background Height
-BackColor   db 46               ; Background Color
-Pagination  db 0                ; Pagination
-CursorX     db 15               ; Cursor X
-CursorY     db 12               ; Cursor Y
-State       db 0                ; State
+BackWidth           dw 0000h    ; Background Width
+BackHeight          dw 0000h    ; Background Height
+BackColor           db 46       ; Background Color
+Pagination          db 0        ; Pagination
+CursorX             db 15       ; Cursor X
+CursorY             db 12       ; Cursor Y
+State               db 0        ; State
 
 ;----------------------------------------------
 
@@ -91,7 +102,7 @@ ret
 
 ; Efeito para a mensagem inicial do sistema (logo)
 EffectInit:
-    mov bl, 44                  ; Cor de fundo
+    mov bl, 0                   ; Cor do texto inicial (preto) - antes estava iniciando na cor 44
     start:
         mov dh, [CursorY]       ; Move o cursor para a posição Y
         mov dl, [CursorX]       ; Move o cursor para a posição X
@@ -107,7 +118,7 @@ EffectInit:
         popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
         inc bl                  ; Incrementa BL
         call Waiting            ; Chama a sub-rotina Waiting
-        cmp bl, 50              ; Compara BL com 50
+        cmp bl, 255             ; Compara BL com 255
         jne start               ; Se BL for diferente de 50, pula para start
         pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
         mov bl, 1               ; Move 1 para BL
@@ -118,8 +129,8 @@ EffectInit:
         popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)        
         dec bl                  ; Decrementa BL
         call Waiting            ; Chama a sub-rotina Waiting
-        cmp bl, 44              ; Compara BL com 44
-        jne start               ; Se BL for diferente de 44, pula para start
+        cmp bl, 0               ; Compara BL com 0
+        jne start               ; Se BL for diferente de 0, pula para start
         pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
         mov bl, 0               ; Move 0 para BL
         mov byte[State], bl     ; Move BL para State
