@@ -49,7 +49,13 @@ mkisofs -o bootable.iso -b disk.img -c boot.catalog -no-emul-boot -boot-load-siz
 qemu-system-x86_64 -drive format=raw,file=disk.img
 ```
 
-## 4. Principais dúvidas e suas soluções:
+## 4. Visualização rápida dos binários em hexadecimal
+
+```bash
+hexdump -C bin/boot.bin
+```
+
+## 5. Principais dúvidas e suas soluções:
 
 #### Tentei algumas opções na minha UEFI/BIOS, mas na máquina real, o KiddieOS só mostra um cursor piscando numa tela preta, já no VB, mostra o proposto.
 

@@ -19,3 +19,4 @@ ret                ; Retorna da sub-rotina
 
 times 510-($-$$) db 0 ; Preenche o restante do setor de boot com zeros até 510 bytes
 dw 0xAA55             ; Assinatura de boot (0xAA55) nos últimos 2 bytes do setor
+
