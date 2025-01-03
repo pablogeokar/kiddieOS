@@ -1,0 +1,38 @@
+;==============================================
+; KiddieOS - Memory Library Routines
+; Author: Francis
+; Version 1.0.0
+;==============================================
+
+%IFNDEF __WMEMORY_LIB__
+%DEFINE __WMEMORY_LIB__
+
+;----------------------------------------------
+; Memory & Windows Configurations
+;______________________________________________
+%DEFINE WindowAddress 0800h:0500h    ; Window Address
+
+%DEFINE Window_Bar          3000h    ; Window Bar
+%DEFINE Window_Width        3001h    ; Window Width
+%DEFINE Window_Height       3003h    ; Window Height
+%DEFINE Window_PositionX    3005h    ; Window Position X
+%DEFINE Window_PositionY    3007h    ; Window Position Y
+%DEFINE Window_Bar_Color    300Ah    ; Window Bar Color
+%DEFINE Window_Back_Color   300Bh    ; Window Background Color
+%DEFINE ButtonClose         300Ch    ; Button Close
+%DEFINE ButtonMaximize      300Dh    ; Button Maximize
+%DEFINE ButtonMinimize      300Eh    ; Button Minimize
+
+M_InitialPositionX       dw 0000h    ; Initial Position X
+M_InitialPositionY       dw 0000h    ; Initial Position Y
+StateWindowBar           dw 0000h    ; State Window Bar
+SavePositionX            dw 0000h    ; Save Position X
+SavePositionY            dw 0000h    ; Save Position Y
+SaveWidth                dw 0000h    ; Save Width
+SaveHeight               dw 0000h    ; Save Height
+;----------------------------------------------
+
+
+
+
+%ENDIF

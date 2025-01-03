@@ -1,0 +1,50 @@
+;==============================================
+; KiddieOS - Disk/Memory Library Routines
+; Author: Francis
+; Version 1.0.0
+;==============================================
+
+%IFNDEF __DISK_LIB__
+%DEFINE __DISK_LIB__
+
+;----------------------------------------------
+; Disk & Memory Configurations
+;______________________________________________
+SegmentAddr     dw 0000h    ; Segment Address
+OffsetAddr      dw 0000h    ; Offset Address
+Sector          db 0        ; Sector
+Track           db 0        ; Track
+Head            db 0        ; Head
+Drive           db 0        ; Driver
+NumSectors      db 0        ; Number of Sectors
+
+Reader          db 02h      ; Reader
+Writer          db 03h      ; Writer
+
+SectorPerTrack  db 0        ; Sector per Track
+TrackPerHead    db 0        ; Track per Head
+;______________________________________________
+
+;----------------------------------------------
+; Routine Library
+ReadDisk:
+    mov ah, byte [Reader]       ; Move the value of Reader to AH
+    call DiskOperation          ; Call the interrupt 13h
+
+WriteDisk:
+    mov ah, byte [Writer]       ; Move the value of Writer to AH
+    call DiskOperation          ; Call the interrupt 13h
+
+DiskOperation:    
+    mov al, byte [NumSectors]   ; Move the value of NumSectors to AL
+    mov ch, byte [Track]        ; Move the value of Track to CH
+    mov cl, byte [Sector]       ; Move the value of Sector to CL
+    mov dh, byte [Head]         ; Move the value of Head to DH
+    mov dl, byte [Drive]        ; Move the value of Drive to DLM
+    mov bx, word [SegmentAddr]  ; Move the value of SegmentAddr to BX  ES:BX
+    mov es, bx                  ; Move the value of BX to ES
+    mov bx, word [OffsetAddr]   ; Move the value of OffsetAddr to BX
+    int 13h                     ; Call the interrupt 13h
+ret                             ; Return from the routine
+;----------------------------------------------
+%ENDIF

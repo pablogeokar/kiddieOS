@@ -27,6 +27,7 @@ Esse comando cria um arquivo chamado disk.img com espaço suficiente para armaze
 dd if=/dev/zero of=disk.img bs=512 count=2880
 dd if=bin/boot.bin of=disk.img bs=512 count=1 conv=notrunc
 dd if=bin/kernel.bin of=disk.img bs=512 seek=1 conv=notrunc
+dd if=bin/window.bin of=disk.img bs=512 seek=2 conv=notrunc
 ```
 
 ### 2.3 Gerando a imagem ISO (opcional, utilizar Se quiser testar usando VirtualBox )

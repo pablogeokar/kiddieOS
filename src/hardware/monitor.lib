@@ -14,19 +14,9 @@ NameSystem db "KiddieOS", 0 ; System Name
 ;----------------------------------------------
 
 ;----------------------------------------------
-; Monitor & Windows Configurations
+; Monitor Configurations
 ;______________________________________________
-Window_Bar          dw 3000h    ; Window Bar
-Window_Width        dw 3001h    ; Window Width
-Window_Height       dw 3003h    ; Window Height
-Window_PositionX    dw 3005h    ; Window Position X
-Window_PositionY    dw 3007h    ; Window Position Y
-Window_Bar_Color    dw 300Ah    ; Window Bar Color
-Window_Back_Color   dw 300Bh    ; Window Background Color
-ButtonClose         dw 300Ch    ; Button Close
-ButtonMaximize      dw 300Dh    ; Button Maximize
-ButtonMinimize      dw 300Eh    ; Button Minimize
-StateWindowBar      dw 0000h    ; State Window Bar
+
 Count               dw 0000h    ; Count
 
 BackWidth           dw 0000h    ; Background Width
@@ -36,7 +26,6 @@ Pagination          db 0        ; Pagination
 CursorX             db 15       ; Cursor X
 CursorY             db 12       ; Cursor Y
 State               db 0        ; State
-
 ;----------------------------------------------
 
 ;----------------------------------------------
@@ -62,18 +51,18 @@ DrawPixelConfig:
     mov dx, 0                   ; Y
 ret
 
-;Pinta o fundo da tela
-; DrawBackground:
-;     int 10h                     ; Call BIOS
-;     inc cx                      ; Incrementa X
-;     cmp cx, word[BackWidth]     ; Compara X com a largura
-;     jne DrawBackground          ; Se não for igual, pinta o fundo
-;     mov cx, 0                   ; Reseta X
-;     inc dx                      ; Incrementa Y
-;     cmp dx, word[BackHeight]    ; Compara Y com a altura
-;     jne DrawBackground          ; Se não for igual, pinta o fundo
-;     mov dx, 0                   ; Reseta Y
-; ret
+; Pinta o fundo da tela
+DrawBackground:
+    int 10h                     ; Call BIOS
+    inc cx                      ; Incrementa X
+    cmp cx, word[BackWidth]     ; Compara X com a largura
+    jne DrawBackground          ; Se não for igual, pinta o fundo
+    mov cx, 0                   ; Reseta X
+    inc dx                      ; Incrementa Y
+    cmp dx, word[BackHeight]    ; Compara Y com a altura
+    jne DrawBackground          ; Se não for igual, pinta o fundo
+    mov dx, 0                   ; Reseta Y
+ret
 
 ; Exibe a string na tela
 PrintString:
@@ -102,7 +91,7 @@ ret
 
 ; Efeito para a mensagem inicial do sistema (logo)
 EffectInit:
-    mov bl, 0                   ; Cor do texto inicial (preto) - antes estava iniciando na cor 44
+    mov bl, 44                  ; Cor do texto inicial
     start:
         mov dh, [CursorY]       ; Move o cursor para a posição Y
         mov dl, [CursorX]       ; Move o cursor para a posição X
@@ -118,7 +107,7 @@ EffectInit:
         popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
         inc bl                  ; Incrementa BL
         call Waiting            ; Chama a sub-rotina Waiting
-        cmp bl, 255             ; Compara BL com 255
+        cmp bl, 50              ; Compara BL com 255
         jne start               ; Se BL for diferente de 50, pula para start
         pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
         mov bl, 1               ; Move 1 para BL
@@ -129,7 +118,7 @@ EffectInit:
         popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)        
         dec bl                  ; Decrementa BL
         call Waiting            ; Chama a sub-rotina Waiting
-        cmp bl, 0               ; Compara BL com 0
+        cmp bl, 44              ; Compara BL com 44
         jne start               ; Se BL for diferente de 0, pula para start
         pusha                   ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
         mov bl, 0               ; Move 0 para BL
@@ -137,7 +126,7 @@ EffectInit:
         mov bx, [Count]         ; Move o contador para BX
         inc bx                  ; Incrementa BX
         mov word[Count], bx     ; Move BX para Count
-        cmp bx, 50              ; Compara BX com 5000 (o número 5000 possui 2bytes) na máquina virtual podemos usar 50 ao invés de 5000 porque a máquina virtual é mais lenta
+        cmp bx, 10              ; contador de 10 vezes
         jne ReturnLoop          ; Se BX for diferente de 5000, pula para ReturnLoop
         jmp ReturnProg          ; Pula para ReturnProg
     ReturnLoop:
@@ -151,13 +140,11 @@ ret
 ; cria um efeito de espera contando até 50000
 Waiting:
     pusha                       ; o comando pusha salva todos os registradores de propósito geral na pilha (junção de push+a de all)
-    mov bx, 0                   ; Move 0 para BX
-    time:
-        inc bx                  ; Incrementa BX
-        cmp bx, 500             ; Compara BX com 50000 podemos usar 500 ao invés de 50000 porque a máquina virtual é mais lenta
-        jne time                ; Se BX for diferente de 50000, pula para time
-        popa                    ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
-ret                         ; Retorna para o ponto de chamada
-    
+    mov ah, 86h                 ; Função 86h da interrupção 15h: Esperar
+    mov cx, 0002h               ; Contador -> 150 milisegundos -> 150000 em hexadecimal -> 0002h:49F0h
+    mov dx, 49F0h               ; Contador
+    int 15h                     ; Chama a interrupção 15h para esperar
+    popa                        ; o comando popa restaura todos os registradores de propósito geral da pilha (junção de pop+a de all)
+ret                             ; Retorna para o ponto de chamada    
 ;----------------------------------------------
 %ENDIF
