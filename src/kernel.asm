@@ -38,14 +38,15 @@ ConfigStack:
 ret                         ; Retorna da sub-rotina
 
 GraficInterface:
-    mov byte[Window_Bar], 0             ; Move o valor 0 para Window_Bar
+    mov byte[Window_Bar], 1             ; Move o valor 1 para Window_Bar
     mov word[Window_PositionX], 5       ; Move o valor 5 para Window_PositionX
     mov word[Window_PositionY], 5       ; Move o valor 5 para Window_PositionY
     mov word[Window_Width], 100         ; Move o valor 100 para Window_Width
     mov word[Window_Height], 150        ; Move o valor 150 para Window_Height
     mov byte[Window_Border_Color], 55   ; Move o valor 0 para Window_Bar_Color
+    mov byte[Window_Bar_Color], 16      ; Move o valor 16 para Window_Bar_Color
 
-    mov byte[Sector], 3                 ; Move o valor 1 para Sector
+    mov byte[Sector], 3                 ; Move o valor 3 para Sector
     mov byte[Drive], 80h                ; Move o valor 80h para Drive 1o disco a ser lido, 81h para o segundo disco
     mov byte[NumSectors], 1             ; Move o valor 1 para NumSectors
     mov word[SegmentAddr], 0800h        ; Move o valor 0x0800 para SegmentAddr
@@ -56,6 +57,7 @@ GraficInterface:
     call WindowAddress                  ; Chama a sub-rotina WindowAddress para definir a janela de texto lembrando que está no endereço 0800:0500
 
     ; chama outra janela diferente
+    mov byte[Window_Bar], 0             ; Move o valor 0 para Window_Bar
     mov word[Window_PositionX], 110     ; Move o valor 110 para Window_PositionX
     mov word[Window_PositionY], 5       ; Move o valor 5 para Window_PositionY
     mov word[Window_Width], 50          ; Move o valor 50 para Window_Width
