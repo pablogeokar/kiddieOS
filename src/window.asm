@@ -15,7 +15,7 @@ popa
 
 DefineWindow:
     mov ah, 0Ch     ; Função 0Ch da interrupção 10h: Definir janela de texto
-    mov al, byte [Window_Border_Color]   ; Cor do pixel superior esquerdo
+    mov al, byte [Window_Border_Color]  ; Cor do pixel superior esquerdo
     mov cx, word [Window_PositionX]     ; Coluna do pixel superior esquerdo
     mov dx, word [Window_PositionY]     ; Linha do pixel superior esquerdo
     cmp byte [Window_Bar], 0            ; Verifica se a barra de título está ativada
@@ -38,11 +38,11 @@ WindowNoBar:
         cmp dx, bx                      ; Compara DX com BX
         jne LineLeft                    ; Se DX for diferente de 50, pula para LineLeft
         jmp Rets                        ; Pula para Rets
-        
+
 WindowWithBar:
         mov al, byte [Window_Bar_Color] ; Cor da barra de título
         mov bx, word [Window_Width]     ; Cumprimento da janela
-        mov bx, cx                      ; Cumprimento da janela + coluna
+        add bx, cx                      ; Cumprimento da janela + coluna
         push ax                         ; Salva o valor de AX na pilha
         mov ax, dx                      ; Move o valor de DX para AX
         add ax, 9                       ; Adiciona 9 a AX
@@ -67,6 +67,8 @@ WindowWithBar:
                 dec dx                          ; Decrementa DX - linha
                 cmp dx, bx                      ; Compara DX com BX
                 jne LineLeftBar                 ; Se DX for diferente de BX, pula para LineLeftBar
+                ; call BackColor
+                ; call ButtonsBar
                 jmp Rets                        ; Pula para Rets
         BackColumn:
             mov cx, word [Window_PositionX] ; Largura da coluna inicial
